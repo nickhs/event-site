@@ -17,6 +17,7 @@ Discover all of the major conferences, meetups and events.
         - Tags
         - Full Address
         - Featured
+        - Price
 
 - List all major meetup groups by location
     - Each meetup has "events" attached to it.
@@ -27,6 +28,7 @@ Discover all of the major conferences, meetups and events.
         - Tags
         - Number of People in Meetup Group
         - Featured
+        - Price
 
 - Events that are attached to conferences and meetups
     - Event Meta-Data:
@@ -40,6 +42,7 @@ Discover all of the major conferences, meetups and events.
         - Host Contact
         - Tags
         - Featured
+        - Price
 
 - Subscribe by location and tag for weekly email update
 
