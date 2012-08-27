@@ -11,7 +11,7 @@ class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     lat = db.Column(db.Numeric)
     lng = db.Column(db.Numeric)
-    title = db.Column(db.String(100))
+    title = db.Column(db.String(100), unique=True)
     address = db.Column(db.Text)
     desc = db.Column(db.Text)
     link = db.Column(db.String(100))
@@ -86,9 +86,9 @@ def give_data():
             db.session.add(event)
             db.session.commit()
         except KeyError as e:
-            return jsonify({'status': 'failed - keyerror', 'error': repr(e)})
+            return jsonify({'status': 'KeyError failure', 'error': repr(e)})
         except Exception as e:
-            return jsonify({'status': 'failed', 'error': repr(e)})
+            return jsonify({'status': 'Unknown failure', 'error': repr(e)})
         
         return jsonify({'status': 'saved'})
 
