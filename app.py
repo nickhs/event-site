@@ -1,4 +1,5 @@
 from flask import Flask, render_template, jsonify, request, Response
+import requests
 from flask.ext.sqlalchemy import SQLAlchemy
 from datetime import datetime
 import simplejson as json
@@ -22,6 +23,7 @@ class Event(db.Model):
 
     def __init__(self, address, title, owner, desc=None, link=None, date=datetime.utcnow()):
         self.address = address # FIXME geocoding
+        self.__geocode__()
         self.title = title
         self.owner = owner
         self.desc = desc
@@ -42,6 +44,15 @@ class Event(db.Model):
         ret['link'] = str(self.link)
         ret['owner'] = self.owner.name
         return ret
+
+    def __geocode__(self):
+        url = 'http://maps.googleapis.com/maps/api/geocode/json'
+        payload = {'sensor': 'false', 'address': self.address}
+        resp = requests.get(url, params=payload)
+        result = resp.json['results'][0]
+        self.address = result['formatted_address']
+        self.lat = result['geometry']['location']['lat']
+        self.lng = result['geometry']['location']['lng']
 
 
 class Owner(db.Model):
