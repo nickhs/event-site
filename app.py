@@ -20,14 +20,13 @@ class Event(db.Model):
     owner_id = db.Column(db.Integer, db.ForeignKey('owner.id'))
     owner = db.relationship('Owner', backref=db.backref('events', lazy='dynamic'))
 
-    def __init__(self, lat, lng, title, owner, desc=None, link=None, date=datetime.utcnow()):
-        self.lat = lat
-        self.lng = lng
+    def __init__(self, address, title, owner, desc=None, link=None, date=datetime.utcnow()):
+        self.address = address # FIXME geocoding
         self.title = title
         self.owner = owner
         self.desc = desc
         self.link = link
-        self.date = date
+        self.date = date # FIXME parse date
 
     def __repr__(self):
         return '<Event %r>' % self.title
@@ -36,6 +35,7 @@ class Event(db.Model):
         ret = {}
         ret['lng'] = str(self.lng)
         ret['lat'] = str(self.lat)
+        ret['address'] = self.address
         ret['title'] = self.title
         ret['desc'] = self.desc
         ret['date'] = str(self.date)
@@ -74,7 +74,23 @@ def give_data():
         return resp
 
     elif request.method == 'POST':
-        import pdb; pdb.set_trace();
+        data = request.json
+        try:
+            owner = Owner.query.filter_by(name=data['owner']).first()
+            if owner is None:
+                owner = Owner(data['owner'])
+                db.session.add(owner)
+                db.session.commit()
+
+            event = Event(data['address'], data['title'], owner, data.get('desc') , data.get('link'), data.get('date'))
+            db.session.add(event)
+            db.session.commit()
+        except KeyError as e:
+            return jsonify({'status': 'failed - keyerror', 'error': repr(e)})
+        except Exception as e:
+            return jsonify({'status': 'failed', 'error': repr(e)})
+        
+        return jsonify({'status': 'saved'})
 
     else:
         pass
