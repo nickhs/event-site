@@ -15,7 +15,7 @@ var Map = new Class({
   init_map: function() {
     var mapOptions = {
       center: new google.maps.LatLng(37.774121, -122.423396),
-      zoom: 12,
+      zoom: 4,
       mapTypeId: google.maps.MapTypeId.ROADMAP,
     };
 
@@ -24,23 +24,20 @@ var Map = new Class({
   },
 
   render: function(item_list) {
-    _this = this;
-    Array.each(item_list.items, function(item, idx) {
+    item_list.items.each(function(item, idx) {
       var marker = new google.maps.Marker({
         position: new google.maps.LatLng(item.lat, item.lng),
-        map: _this.map,
+        map: this.map,
         title: item.title,
       });
       marker.item = item;
-      google.maps.event.addListener(marker, 'click', _this.onMarkerClick);
-    });
+      item.marker = marker;
+      google.maps.event.addListener(marker, 'click', this.onMarkerClick);
+    }, this);
   },
 
   onMarkerClick: function(marker) {
-    var infowindow = new google.maps.InfoWindow({
-      content: this.item.title,
-    });
-    infowindow.open(this.map, this);
+    console.log("Click on ": marker)
   },
 });
 
@@ -78,20 +75,23 @@ var Items = new Class({
     }
   },
 
+  success: function(data) {
+    data.items.each(function(item, index) {
+      this.add(new Item(item));
+    }, this);
+    this.fireEvent('done-loading');
+  },
+
   load: function() {
     this.items = [];
-    var _this = this;
 
-    var req = new Request.JSON({
-      url: 'data',
-      onSuccess: function(data) {
-        console.log(data);
-        Array.each(data.items, function(item, index) {
-          var ev = new Item(item);
-          _this.add(ev);
-        });
-        _this.fireEvent('done-loading');
-      }
-    }).get();
+    if (!this.req) {
+      this.req = new Request.JSON({
+        url: 'data',
+        onSuccess: this.success.bind(this) 
+      })
+    }
+
+    this.req.get()
   },
 });
