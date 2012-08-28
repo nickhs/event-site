@@ -3,6 +3,7 @@ window.addEvent('domready', function() {
   var item_list = new Items();
   item_list.addEvent('done-loading', function() {
     mapc.render(item_list);
+    render_sidebar(item_list.items);
   });
   item_list.load()
 });
@@ -33,11 +34,31 @@ var Map = new Class({
       marker.item = item;
       item.marker = marker;
       google.maps.event.addListener(marker, 'click', this.onMarkerClick);
+      console.log(marker)
     }, this);
   },
 
   onMarkerClick: function(marker) {
-    console.log("Click on ": marker)
+    $('event-details').empty()
+
+
+    var header = new Element('h4', {
+      html: "Event Details"
+    });
+
+    var name = new Element('div', {
+      'class': 'title',
+      html: this.item.title,
+    });
+
+    var details = new Element('div', {
+      'class': 'details',
+      html: this.item.desc,
+    });
+
+    header.inject($('event-details'))
+    name.inject($('event-details'))
+    details.inject($('event-details'))
   },
 });
 
@@ -64,7 +85,7 @@ var Items = new Class({
   
   remove: function(to_remove) {
     if (to_remove) {
-      Array.each(items, function(item, idx) {
+      items.each(function(item, idx) {
         if (to_remove == item) {
           this.items.slice(idx, idx+1);
           return;
@@ -95,3 +116,38 @@ var Items = new Class({
     this.req.get()
   },
 });
+
+function render_sidebar(items) {
+  console.log(items)
+
+  $('loading').dispose()
+
+  items.each(function(item, idx) {
+    var container = new Element('li');
+    var sidebar = new Element('div', {
+      'class': 'sidebar',
+    });
+    var infocontainer = new Element('div', {
+      'class': 'info-container',
+    });
+    var title = new Element('div', {
+      'class': 'title',
+      html: item.title,
+    });
+    var info = new Element('div', {
+      'class': 'info',
+      html: item.address,
+    });
+
+    // Assemble li
+
+    sidebar.inject(container);
+    infocontainer.inject(container);
+    title.inject(infocontainer);
+    info.inject(infocontainer);
+
+    container.inject($('events-list'));
+  });
+};
+
+
