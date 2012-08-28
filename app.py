@@ -12,17 +12,17 @@ class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     lat = db.Column(db.Numeric)
     lng = db.Column(db.Numeric)
-    title = db.Column(db.String(100), unique=True)
+    title = db.Column(db.String, unique=True)
     address = db.Column(db.Text)
     desc = db.Column(db.Text)
-    link = db.Column(db.String(100))
+    link = db.Column(db.String)
     date = db.Column(db.DateTime)
 
     owner_id = db.Column(db.Integer, db.ForeignKey('owner.id'))
     owner = db.relationship('Owner', backref=db.backref('events', lazy='dynamic'))
 
     def __init__(self, address, title, owner, desc=None, link=None, date=datetime.utcnow()):
-        self.address = address # FIXME geocoding
+        self.address = address
         self.__geocode__()
         self.title = title
         self.owner = owner
@@ -79,10 +79,7 @@ def give_data():
             items.append(event.serialize())
 
         payload = {'count': len(items), 'items': items}
-        payload = json.dumps(payload)
-
-        resp = Response(payload, status=200, mimetype='application/json')
-        return resp
+        return jsonify(payload)
 
     elif request.method == 'POST':
         data = request.json
