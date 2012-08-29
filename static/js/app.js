@@ -5,7 +5,7 @@ window.addEvent('domready', function() {
     mapc.render(item_list);
     render_sidebar(item_list.items);
   });
-  item_list.load()
+  item_list.load();
 });
 
 var Map = new Class({
@@ -17,7 +17,7 @@ var Map = new Class({
     var mapOptions = {
       center: new google.maps.LatLng(37.774121, -122.423396),
       zoom: 4,
-      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
     };
 
     this.map = new google.maps.Map($('map_canvas'), mapOptions);
@@ -29,17 +29,17 @@ var Map = new Class({
       var marker = new google.maps.Marker({
         position: new google.maps.LatLng(item.lat, item.lng),
         map: this.map,
-        title: item.title,
+        title: item.title
       });
       marker.item = item;
       item.marker = marker;
       google.maps.event.addListener(marker, 'click', this.onMarkerClick);
-      console.log(marker)
+      console.log(marker);
     }, this);
   },
 
   onMarkerClick: function(marker) {
-    $('event-details').empty()
+    $('event-details').empty();
 
 
     var header = new Element('h4', {
@@ -48,24 +48,24 @@ var Map = new Class({
 
     var name = new Element('div', {
       'class': 'title',
-      html: this.item.title,
+      html: this.item.title
     });
 
     var details = new Element('div', {
       'class': 'details',
-      html: this.item.desc,
+      html: this.item.desc
     });
 
-    header.inject($('event-details'))
-    name.inject($('event-details'))
-    details.inject($('event-details'))
-  },
+    header.inject($('event-details'));
+    name.inject($('event-details'));
+    details.inject($('event-details'));
+  }
 });
 
 var Item = new Class({
   initialize: function(data) {
     Object.each(data, function(value, key) {
-      this[key] = value
+      this[key] = value;
     }, this);
   }
 });
@@ -87,10 +87,10 @@ var Items = new Class({
     if (to_remove) {
       items.each(function(item, idx) {
         if (to_remove == item) {
-          this.items.slice(idx, idx+1);
-          return;
+          return this.items.slice(idx, idx+1);
         }
       });
+			return null;
     } else {
       return this.items.pop();
     }
@@ -110,33 +110,33 @@ var Items = new Class({
       this.req = new Request.JSON({
         url: 'data',
         onSuccess: this.success.bind(this) 
-      })
+      });
     }
 
-    this.req.get()
-  },
+    this.req.get();
+  }
 });
 
 function render_sidebar(items) {
-  console.log(items)
+  console.log(items);
 
-  $('loading').dispose()
+  $('loading').dispose();
 
   items.each(function(item, idx) {
     var container = new Element('li');
     var sidebar = new Element('div', {
-      'class': 'sidebar',
+      'class': 'sidebar'
     });
     var infocontainer = new Element('div', {
-      'class': 'info-container',
+      'class': 'info-container'
     });
     var title = new Element('div', {
       'class': 'title',
-      html: item.title,
+      html: item.title
     });
     var info = new Element('div', {
       'class': 'info',
-      html: item.address,
+      html: item.address
     });
 
     // Assemble li
@@ -148,6 +148,6 @@ function render_sidebar(items) {
 
     container.inject($('events-list'));
   });
-};
+}
 
 
