@@ -73,6 +73,11 @@ class Owner(db.Model):
     def __repr__(self):
         return '<Owner %s>' % self.name
 
+    def serialize(self):
+        ret = {}
+        ret['name'] = self.name
+        return ret
+
 
 @app.route('/')
 def index():
@@ -81,7 +86,7 @@ def index():
 @app.route('/data', methods=['GET', 'POST', 'DELETE'])
 def give_data():
     if request.method == 'GET':
-        items = serialize_events(Event.query.all())
+        items = serialize_objects(Event.query.all())
         payload = {'count': len(items), 'items': items}
         return jsonify(payload)
 
@@ -104,17 +109,32 @@ def give_data():
         
         return jsonify({'status': 'saved'})
 
-    else:
-        pass
+    elif request.method == 'DELETE':
+        data = request.json
+        event = None
 
-    return jsonify({'status': 'nope'})
+        if 'id' in data:
+            event = Event.query.get(data['id'])
+
+        elif 'title' in data:
+            event = Event.query.filter_by(title=data['title']).first()
+
+        else:
+            return jsonify({'status': 'failed', 'error': "No valid search specified. Valid search fields are ID or Name"});
+
+        if event == None:
+            return jsonify({'status': 'failed', 'error': 'No event found'})
+
+        db.session.delete(event)
+        db.session.commit()
+        return jsonify({'status': 'success', 'event': event.serialize()})
 
 
 @app.route('/data/<search_term>', methods=['GET'])
 def give_better_data(search_term):
     if search_term in ['feat', 'featured', 'f']:
         events = Event.query.filter_by(featured=True).all()
-        items = serialize_events(events)
+        items = serialize_objects(events)
         payload = {'count': len(items), 'items': items}
         return jsonify(payload)
 
@@ -122,11 +142,17 @@ def give_better_data(search_term):
         return jsonify({'status': 'unimplemented'})
 
 
+@app.route('/owner', methods=['GET'])
+def give_owners():
+    items = serialize_objects(Owner.query.all())
+    payload = {'count': len(items), 'items': items}
+    return jsonify(payload)
 
-def serialize_events(events):
+
+def serialize_objects(objects):
     items = []
-    for event in events:
-        items.append(event.serialize())
+    for obj in objects:
+        items.append(obj.serialize())
 
     return items
 
