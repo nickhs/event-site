@@ -39,26 +39,7 @@ var Map = new Class({
   },
 
   onMarkerClick: function(marker) {
-    $('event-details').empty();
-
-
-    var header = new Element('h4', {
-      html: "Event Details"
-    });
-
-    var name = new Element('div', {
-      'class': 'title',
-      html: this.item.title
-    });
-
-    var details = new Element('div', {
-      'class': 'details',
-      html: this.item.desc
-    });
-
-    header.inject($('event-details'));
-    name.inject($('event-details'));
-    details.inject($('event-details'));
+    render_details(this);
   }
 });
 
@@ -147,7 +128,44 @@ function render_sidebar(items) {
     info.inject(infocontainer);
 
     container.inject($('events-list'));
+
+		container.addEvents({
+			click: function() {
+				item.marker.map.panTo(item.marker.position);
+				item.marker.map.setZoom(15);
+        render_details(item.marker);
+			},
+
+      mouseenter: function() {
+        this.addClass('selected');
+      },
+
+      mouseleave: function() {
+        this.removeClass('selected');
+      }
+		});
   });
 }
 
+function render_details(marker) {
+  $('event-details').empty();
+
+  var header = new Element('h4', {
+    html: "Event Details"
+  });
+
+  var name = new Element('div', {
+    'class': 'title',
+    html: marker.item.title
+  });
+
+  var details = new Element('div', {
+    'class': 'details',
+    html: marker.item.desc
+  });
+
+  header.inject($('event-details'));
+  name.inject($('event-details'));
+  details.inject($('event-details'));
+}
 

@@ -17,11 +17,12 @@ class Event(db.Model):
     desc = db.Column(db.Text)
     link = db.Column(db.String)
     date = db.Column(db.DateTime)
+    featured = db.Column(db.Boolean)
 
     owner_id = db.Column(db.Integer, db.ForeignKey('owner.id'))
     owner = db.relationship('Owner', backref=db.backref('events', lazy='dynamic'))
 
-    def __init__(self, address, title, owner, desc=None, link=None, date=datetime.utcnow()):
+    def __init__(self, address, title, owner, desc=None, link=None, date=datetime.utcnow(), featured=False):
         self.address = address
         self.__geocode__()
         self.title = title
@@ -29,6 +30,12 @@ class Event(db.Model):
         self.desc = desc
         self.link = link
         self.date = date # FIXME parse date
+        if type(self.featured) == str:
+            featured = self.featured.lower() in ['true', 't', 'yes', 'y', '1']
+        elif type(self.featured) == bool:
+            featured = self.featured
+        else:
+            featured = False
 
     def __repr__(self):
         return '<Event %r>' % self.title
@@ -43,6 +50,7 @@ class Event(db.Model):
         ret['date'] = str(self.date)
         ret['link'] = str(self.link)
         ret['owner'] = self.owner.name
+        ret['featured'] = self.featured
         return ret
 
     def __geocode__(self):
@@ -73,11 +81,7 @@ def index():
 @app.route('/data', methods=['GET', 'POST', 'DELETE'])
 def give_data():
     if request.method == 'GET':
-        events = Event.query.all()
-        items = []
-        for event in events:
-            items.append(event.serialize())
-
+        items = serialize_events(Event.query.all())
         payload = {'count': len(items), 'items': items}
         return jsonify(payload)
 
@@ -90,7 +94,7 @@ def give_data():
                 db.session.add(owner)
                 db.session.commit()
 
-            event = Event(data['address'], data['title'], owner, data.get('desc') , data.get('link'), data.get('date'))
+            event = Event(data['address'], data['title'], owner, data.get('desc') , data.get('link'), data.get('date'), data.get('featured'))
             db.session.add(event)
             db.session.commit()
         except KeyError as e:
@@ -104,6 +108,28 @@ def give_data():
         pass
 
     return jsonify({'status': 'nope'})
+
+
+@app.route('/data/<search_term>', methods=['GET'])
+def give_better_data(search_term):
+    if search_term in ['feat', 'featured', 'f']:
+        events = Event.query.filter_by(featured=True).all()
+        items = serialize_events(events)
+        payload = {'count': len(items), 'items': items}
+        return jsonify(payload)
+
+    else:
+        return jsonify({'status': 'unimplemented'})
+
+
+
+def serialize_events(events):
+    items = []
+    for event in events:
+        items.append(event.serialize())
+
+    return items
+
 
 if __name__ == "__main__":
     app.run(debug=True)
