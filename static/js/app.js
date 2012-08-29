@@ -1,11 +1,20 @@
 window.addEvent('domready', function() {
   var mapc = new Map();
-  var item_list = new Items();
-  item_list.addEvent('done-loading', function() {
-    mapc.render(item_list);
-    render_sidebar(item_list.items);
+
+  var area_list = new Items($('area-events').getElement('ul'), 'data');
+  area_list.addEvent('done-loading', function() {
+    mapc.render(area_list);
+    area_list.render();
   });
-  item_list.load();
+  area_list.load();
+
+
+  var feat_list = new Items($('hot-events').getElement('ul'), 'data/featured');
+  feat_list.addEvent('done-loading', function() {
+    feat_list.render();
+  });
+  feat_list.load();
+
 });
 
 var Map = new Class({
@@ -55,8 +64,16 @@ var Items = new Class({
   Implements: Events,
 
   items: undefined,
+  url: 'data',
+  bound_element: undefined,
   
-  initialize: function() {
+  initialize: function(bound_element, endpoint) {
+    this.bound_element = bound_element;
+    
+    if (endpoint) {
+      this.url = endpoint;
+    }
+
     this.items = [];
   },
   
@@ -89,63 +106,67 @@ var Items = new Class({
 
     if (!this.req) {
       this.req = new Request.JSON({
-        url: 'data',
+        url: this.url,
         onSuccess: this.success.bind(this) 
       });
     }
 
     this.req.get();
+  },
+
+  render: function() {
+    console.log(this.bound_element);
+
+    if (this.items.length === 0) {
+      this.bound_element.getElement('li').set('text', 'Nothing :(');
+      return;
+    }
+
+    this.bound_element.getElement('li').dispose();
+    
+    this.items.each(function(item, idx) {
+      var container = new Element('li');
+      var sidebar = new Element('div', {
+        'class': 'sidebar'
+      });
+      var infocontainer = new Element('div', {
+        'class': 'info-container'
+      });
+      var title = new Element('div', {
+        'class': 'title',
+        html: item.title
+      });
+      var info = new Element('div', {
+        'class': 'info',
+        html: item.address
+      });
+
+      // Assemble li
+      sidebar.inject(container);
+      infocontainer.inject(container);
+      title.inject(infocontainer);
+      info.inject(infocontainer);
+
+      container.inject(this.bound_element);
+
+      container.addEvents({
+        click: function() {
+          item.marker.map.panTo(item.marker.position);
+          item.marker.map.setZoom(15);
+          render_details(item.marker);
+        },
+
+        mouseenter: function() {
+          this.addClass('selected');
+        },
+
+        mouseleave: function() {
+          this.removeClass('selected');
+        }
+      });
+    }, this);
   }
 });
-
-function render_sidebar(items) {
-  console.log(items);
-
-  $('loading').dispose();
-
-  items.each(function(item, idx) {
-    var container = new Element('li');
-    var sidebar = new Element('div', {
-      'class': 'sidebar'
-    });
-    var infocontainer = new Element('div', {
-      'class': 'info-container'
-    });
-    var title = new Element('div', {
-      'class': 'title',
-      html: item.title
-    });
-    var info = new Element('div', {
-      'class': 'info',
-      html: item.address
-    });
-
-    // Assemble li
-
-    sidebar.inject(container);
-    infocontainer.inject(container);
-    title.inject(infocontainer);
-    info.inject(infocontainer);
-
-    container.inject($('events-list'));
-
-		container.addEvents({
-			click: function() {
-				item.marker.map.panTo(item.marker.position);
-				item.marker.map.setZoom(15);
-        render_details(item.marker);
-			},
-
-      mouseenter: function() {
-        this.addClass('selected');
-      },
-
-      mouseleave: function() {
-        this.removeClass('selected');
-      }
-		});
-  });
-}
 
 function render_details(marker) {
   $('event-details').empty();
