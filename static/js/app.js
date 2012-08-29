@@ -11,6 +11,7 @@ window.addEvent('domready', function() {
 
   var feat_list = new Items($('hot-events').getElement('ul'), 'data/featured');
   feat_list.addEvent('done-loading', function() {
+    mapc.render(feat_list);
     feat_list.render();
   });
   feat_list.load();
@@ -130,7 +131,8 @@ var Items = new Class({
         'class': 'sidebar'
       });
       var infocontainer = new Element('div', {
-        'class': 'info-container'
+        'class': 'info-container',
+        'data-id': item.id
       });
       var title = new Element('div', {
         'class': 'title',
@@ -151,6 +153,7 @@ var Items = new Class({
 
       container.addEvents({
         click: function() {
+          console.log(item);
           item.marker.map.panTo(item.marker.position);
           item.marker.map.setZoom(15);
           render_details(item.marker);

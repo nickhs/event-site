@@ -30,12 +30,12 @@ class Event(db.Model):
         self.desc = desc
         self.link = link
         self.date = date # FIXME parse date
-        if type(self.featured) == str:
-            featured = self.featured.lower() in ['true', 't', 'yes', 'y', '1']
-        elif type(self.featured) == bool:
-            featured = self.featured
+        if type(featured) == str:
+            self.featured = featured.lower() in ['true', 't', 'yes', 'y', '1']
+        elif type(featured) == bool:
+            self.featured = featured
         else:
-            featured = False
+            self.featured = False
 
     def __repr__(self):
         return '<Event %r>' % self.title
@@ -109,7 +109,7 @@ def give_data():
         except Exception as e:
             return jsonify({'status': 'Unknown failure', 'error': repr(e)})
         
-        return jsonify({'status': 'saved'})
+        return jsonify({'status': 'saved', 'event': event.serialize()})
 
     elif request.method == 'DELETE':
         data = request.json
