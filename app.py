@@ -51,6 +51,7 @@ class Event(db.Model):
         ret['link'] = str(self.link)
         ret['owner'] = self.owner.name
         ret['featured'] = self.featured
+        ret['id'] = self.id
         return ret
 
     def __geocode__(self):
@@ -76,6 +77,7 @@ class Owner(db.Model):
     def serialize(self):
         ret = {}
         ret['name'] = self.name
+        ret['id'] = self.id
         return ret
 
 
@@ -120,7 +122,7 @@ def give_data():
             event = Event.query.filter_by(title=data['title']).first()
 
         else:
-            return jsonify({'status': 'failed', 'error': "No valid search specified. Valid search fields are ID or Name"});
+            return jsonify({'status': 'failed', 'error': "No valid search specified. Valid search fields are id or name"});
 
         if event == None:
             return jsonify({'status': 'failed', 'error': 'No event found'})
