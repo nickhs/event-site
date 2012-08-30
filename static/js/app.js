@@ -26,11 +26,21 @@ var Map = new Class({
   init_map: function() {
     var mapOptions = {
       center: new google.maps.LatLng(37.774121, -122.423396),
-      zoom: 4,
+      zoom: 12,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
 
     this.map = new google.maps.Map($('map_canvas'), mapOptions);
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        var loc = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+        if (loc !== undefined) {
+          this.map.setCenter(loc);
+        }
+      });
+    }
+
     return this.map;
   },
 
@@ -153,9 +163,6 @@ var Items = new Class({
 
       container.addEvents({
         click: function() {
-          console.log(item);
-          item.marker.map.panTo(item.marker.position);
-          item.marker.map.setZoom(15);
           render_details(item.marker);
         },
 
@@ -172,6 +179,9 @@ var Items = new Class({
 });
 
 function render_details(marker) {
+  marker.map.panTo(marker.position);
+  marker.map.setZoom(13);
+  
   $('event-details').empty();
 
   var header = new Element('h4', {
