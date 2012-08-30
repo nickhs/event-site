@@ -1,6 +1,7 @@
-from flask import Flask, render_template, jsonify, request, Response
+from flask import Flask, render_template, jsonify, request
 import requests
 from flask.ext.sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import IntegrityError
 from datetime import datetime
 from dateutil import parser
 import simplejson as json
@@ -26,8 +27,8 @@ class Event(db.Model):
     owner_id = db.Column(db.Integer, db.ForeignKey('owner.id'))
     owner = db.relationship('Owner', backref=db.backref('events'), lazy='joined')
 
-    city_id = db.Column(db.Integer, db.ForeignKey('city.id'))
-    city = db.relationship('City', backref=db.backref('cities'), lazy='joined')
+    city_id = db.Column(db.Integer, db.ForeignKey('city.id'), index=True)
+    city = db.relationship('City', backref=db.backref('events'), lazy='joined')
 
     def __init__(self, address, title, owner, start_date, end_date, city, desc=None, link=None, featured=False, paid=False):
         self.address = address
@@ -99,72 +100,96 @@ def index():
 @app.route('/data', methods=['GET', 'POST', 'DELETE'])
 def give_data():
     if request.method == 'GET':
-        items = [convert_to_dict(x) for x in Event.query.all()]
-        payload = {'count': len(items), 'items': items}
-        return jsonify(payload)
+        resp = handle_get(request)
+        return jsonify(resp)
 
     elif request.method == 'POST':
-        data = request.json
-        
-        try:
-            owner = Owner.query.filter_by(name=data['owner']).first()
-            if owner is None:
-                add_item(Owner(data['owner']))
-
-            city = City.query.filter_by(name=data['city']).first()
-            if city is None:
-                add_item(City(data['city']))
-
-
-            event = Event(address=data['address'],
-                          title=data['title'],
-                          start_date=data['start_date'],
-                          end_date=data['end_date'],
-                          owner=owner,
-                          city=city,
-                          desc=data.get('desc'),
-                          link=data.get('link'),
-                          featured=data.get('featured'),
-                          paid=data.get('paid'))
-            add_item(event)
-        
-        except KeyError as e:
-            return jsonify({'status': 'KeyError failure', 'error': repr(e)})
-        except Exception as e:
-            return jsonify({'status': 'Unknown failure', 'error': repr(e)})
-        
-        return jsonify({'status': 'saved', 'event': convert_to_dict(event)})
-
+        resp = handle_post(request)
+        return jsonify(resp)
+      
     elif request.method == 'DELETE':
-        data = request.json
-        event = None
+        resp = handle_delete(request)
+        return jsonify(resp)
 
-        if 'id' in data:
-            event = Event.query.get(data['id'])
 
-        elif 'title' in data:
-            event = Event.query.filter_by(title=data['title']).first()
+def handle_get(request):
+    if 'city' in request.args:
+        to_find = request.args['city']
+        city = City.query.filter_by(name=to_find).first()
 
+        if city is None:
+            items = []
         else:
-            return jsonify({'status': 'failed', 'error': "No valid search specified. Valid search fields are id or name"});
+            items = Event.query.filter_by(city_id=city.id).order_by(Event.start_date).limit(1).all()
+    else:
+        items = [convert_to_dict(x) for x in Event.query.limit(10).all()]
 
-        if event == None:
-            return jsonify({'status': 'failed', 'error': 'No event found'})
-
-        delete_item(event)
-        return jsonify({'status': 'success', 'event': convert_to_dict(event)})
+    return {'count': len(items), 'items': items}
 
 
-@app.route('/data/<search_term>', methods=['GET'])
-def give_better_data(search_term):
-    if search_term in ['feat', 'featured', 'f']:
+def handle_post(request):
+    data = request.json
+        
+    try:
+        owner = Owner.query.filter_by(name=data['owner']).first()
+        if owner is None:
+            add_item(Owner(data['owner']))
+
+        city = City.query.filter_by(name=data['city']).first()
+        if city is None:
+            add_item(City(data['city']))
+
+
+        event = Event(address=data['address'],
+                      title=data['title'],
+                      start_date=data['start_date'],
+                      end_date=data['end_date'],
+                      owner=owner,
+                      city=city,
+                      desc=data.get('desc'),
+                      link=data.get('link'),
+                      featured=data.get('featured'),
+                      paid=data.get('paid'))
+        error = add_item(event)
+
+        if (error != None):
+            return {'status': 'IntegrityError', 'error': error}
+    
+    except KeyError as e:
+        return {'status': 'KeyError failure', 'error': repr(e)}
+    except Exception as e:
+        return {'status': 'Unknown failure', 'error': repr(e)}
+    
+    return {'status': 'saved', 'event': convert_to_dict(event)}
+
+
+def handle_delete(request):
+    data = request.json
+    event = None
+
+    if 'id' in data:
+        event = Event.query.get(data['id'])
+
+    elif 'title' in data:
+        event = Event.query.filter_by(title=data['title']).first()
+
+    else:
+        return {'status': 'failed', 'error': "No valid search specified. Valid search fields are id or name"};
+
+    if event == None:
+        return {'status': 'failed', 'error': 'No event found'}
+
+    delete_item(event)
+    return {'status': 'success', 'event': convert_to_dict(event)}
+
+
+
+@app.route('/featured', methods=['GET'])
+def give_better_data():
         events = Event.query.filter_by(featured=True).all()
         items = [convert_to_dict(x) for x in events]
         payload = {'count': len(items), 'items': items}
         return jsonify(payload)
-
-    else:
-        return jsonify({'status': 'unimplemented'})
 
 
 @app.route('/owner', methods=['GET'])
@@ -189,9 +214,14 @@ def add_item(item):
     try:
         db.session.add(item)
         db.session.commit()
+        return
+    except IntegrityError as e:
+        db.session.rollback()
+        return "Duplicate entry"
     except Exception as e:
         print e
         db.session.rollback()
+        return repr(e)
 
 
 def delete_item(item):
