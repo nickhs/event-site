@@ -114,7 +114,7 @@ def convert_to_dict(obj):
     for key, val in obj.__dict__.items():
         if key.startswith('_'):
             continue
-
+        # Broken if unicode
         ret[key] = str(val)
 
     return ret
