@@ -5,3 +5,4 @@ psycopg2==2.4.5
 gevent==0.13.7
 requests
 simplejson
+python-dateutil
