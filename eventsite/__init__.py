@@ -8,6 +8,8 @@ app = Flask('eventsite')
 app.debug = config.DEBUG
 app.secret_key = config.SECRET_KEY
 app.host = config.HOST
+app.config['SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI
 
 app.register_blueprint(data_api)
+
 db.init_app(app)
