@@ -9,7 +9,7 @@ window.addEvent('domready', function() {
   area_list.load();
 
 
-  var feat_list = new Items($('hot-events').getElement('ul'), 'data/featured');
+  var feat_list = new Items($('hot-events').getElement('ul'), 'featured');
   feat_list.addEvent('done-loading', function() {
     mapc.render(feat_list);
     feat_list.render();
