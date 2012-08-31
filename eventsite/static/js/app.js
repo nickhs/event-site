@@ -31,16 +31,16 @@ var Map = new Class({
     };
 
     this.map = new google.maps.Map($('map_canvas'), mapOptions);
-
+    var m = this.map;
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(position) {
         var loc = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-        if (loc !== undefined) {
-          this.map.setCenter(loc);
+        if (loc != undefined) {
+          m.setCenter(loc);
         }
       });
     }
-
+    console.log(this.map);
     return this.map;
   },
 
@@ -54,7 +54,6 @@ var Map = new Class({
       marker.item = item;
       item.marker = marker;
       google.maps.event.addListener(marker, 'click', this.onMarkerClick);
-      console.log(marker);
     }, this);
   },
 
@@ -126,8 +125,6 @@ var Items = new Class({
   },
 
   render: function() {
-    console.log(this.bound_element);
-
     if (this.items.length === 0) {
       this.bound_element.getElement('li').set('text', 'Nothing :(');
       return;
