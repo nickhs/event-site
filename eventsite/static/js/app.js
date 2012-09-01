@@ -2,11 +2,16 @@ window.addEvent('domready', function() {
   var mapc = new Map();
 
   var area_list = new Items($('area-events').getElement('ul'), 'data');
+  
   area_list.addEvent('done-loading', function() {
     mapc.render(area_list);
     area_list.render();
   });
-  area_list.load();
+
+  mapc.addEvent('update-bounds', function() {
+    console.log('here');
+    area_list.load(mapc.city);
+  });
 
 
   var feat_list = new Items($('hot-events').getElement('ul'), 'featured');
@@ -19,8 +24,12 @@ window.addEvent('domready', function() {
 });
 
 var Map = new Class({
+  Implements: Events,
+
   initialize: function() {
     this.init_map();
+    this.bounds = null;
+    this.city = null;
   },
 
   init_map: function() {
@@ -31,16 +40,25 @@ var Map = new Class({
     };
 
     this.map = new google.maps.Map($('map_canvas'), mapOptions);
-    var m = this.map;
+    
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(function(position) {
+      navigator.geolocation.getCurrentPosition((function(position) {
         var loc = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
         if (loc != undefined) {
-          m.setCenter(loc);
+          this.map.setCenter(loc);
         }
-      });
+      }).bind(this));
     }
-    console.log(this.map);
+
+    google.maps.event.addListener(this.map, 'bounds_changed', (function() {
+      if (this.bounds === null) {
+        this.updateBounds();
+      }
+      else if (!this.map.getBounds().intersects(this.bounds) && this.map.getZoom() > 11) {
+        this.updateBounds();
+      }
+    }).bind(this));
+
     return this.map;
   },
 
@@ -59,6 +77,27 @@ var Map = new Class({
 
   onMarkerClick: function(marker) {
     render_details(this);
+  },
+
+  findCity: function(loc) {
+    geocoder = new google.maps.Geocoder();
+    geocoder.geocode({'latLng': loc}, (function(results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+        results.each(function(item, idx) {
+          if (item.types[0] == 'administrative_area_level_2') {
+            this.city = item.address_components[0].long_name;
+            console.log(this.city);
+            this.fireEvent('update-bounds');
+          }
+        }, this);
+      }
+    }).bind(this));
+  },
+
+  updateBounds: function() {
+    console.log('updateBounds ran');
+    this.bounds = this.map.getBounds();
+    this.findCity(this.map.getCenter());
   }
 });
 
@@ -78,12 +117,11 @@ var Items = new Class({
   bound_element: undefined,
   
   initialize: function(bound_element, endpoint) {
-    this.bound_element = bound_element;
-    
     if (endpoint) {
       this.url = endpoint;
     }
 
+    this.bound_element = bound_element;
     this.items = [];
   },
   
@@ -111,7 +149,8 @@ var Items = new Class({
     this.fireEvent('done-loading');
   },
 
-  load: function() {
+  load: function(city) {
+    console.log("load: " + city);
     this.items = [];
 
     if (!this.req) {
@@ -121,7 +160,13 @@ var Items = new Class({
       });
     }
 
-    this.req.get();
+    if (city) {
+      this.req.get('city='+city);
+    }
+
+    else {
+      this.req.get();
+    }
   },
 
   render: function() {
@@ -199,4 +244,3 @@ function render_details(marker) {
   name.inject($('event-details'));
   details.inject($('event-details'));
 }
-
