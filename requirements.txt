@@ -6,3 +6,4 @@ gevent==0.13.7
 requests
 simplejson
 python-dateutil
+python-faker
