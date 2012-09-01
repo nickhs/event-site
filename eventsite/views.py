@@ -33,6 +33,7 @@ def handle_get(request):
             items = []
         else:
             items = Event.query.filter_by(city_id=city.id).order_by(Event.start_date).limit(1).all()
+            items = [convert_to_dict(x) for x in items]
     else:
         items = [convert_to_dict(x) for x in Event.query.limit(10).all()]
 
