@@ -32,10 +32,10 @@ def handle_get(request):
         if city is None:
             items = []
         else:
-            items = Event.query.filter_by(city_id=city.id).order_by(Event.start_date).limit(1).all()
+            items = Event.query.filter_by(city_id=city.id).order_by(Event.start_date).limit(5).all()
             items = [convert_to_dict(x) for x in items]
     else:
-        items = [convert_to_dict(x) for x in Event.query.limit(10).all()]
+        items = [convert_to_dict(x) for x in Event.query.limit(5).all()]
 
     return {'count': len(items), 'items': items}
 
