@@ -110,6 +110,14 @@ def give_owners():
     return jsonify(payload)
 
 
+# TODO cache this function
+@data_api.route('/city', methods=['GET'])
+def give_cities():
+    items = [convert_to_dict(x) for x in City.query.all()]
+    payload = {'count': len(items), 'items': items}
+    return jsonify(payload)
+
+
 def convert_to_dict(obj):
     ret = {}
     for key, val in obj.__dict__.items():
