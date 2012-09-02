@@ -9,7 +9,6 @@ window.addEvent('domready', function() {
   });
 
   mapc.addEvent('update-bounds', function() {
-    console.log('here');
     area_list.load(mapc.city);
   });
 
@@ -88,6 +87,7 @@ var Map = new Class({
             this.city = item.address_components[0].long_name;
             console.log(this.city);
             this.fireEvent('update-bounds');
+            return;
           }
         }, this);
       }
@@ -171,11 +171,11 @@ var Items = new Class({
 
   render: function() {
     if (this.items.length === 0) {
-      this.bound_element.getElement('li').set('text', 'Nothing :(');
+      this.bound_element.getElements('li').set('text', 'Nothing :(');
       return;
     }
 
-    this.bound_element.getElement('li').dispose();
+    this.bound_element.getElements('li').dispose();
     
     this.items.each(function(item, idx) {
       var container = new Element('li');
@@ -220,6 +220,7 @@ var Items = new Class({
   }
 });
 
+// FIXME move to item class
 function render_details(marker) {
   marker.map.panTo(marker.position);
   marker.map.setZoom(13);
