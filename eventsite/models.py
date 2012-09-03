@@ -27,8 +27,7 @@ class Event(db.Model):
     city = db.relationship('City', backref=db.backref('events'), lazy='joined')
 
     def __init__(self, address, title, owner, start_date, end_date, city, desc=None, link=None, featured=False, paid=False):
-        self.address = address
-        self.__geocode__()
+        self.address, self.lat, self.lng = _geocode(address)
         self.title = title
         self.owner = owner
         self.desc = desc
@@ -51,15 +50,6 @@ class Event(db.Model):
     def __str__(self):
         return self.title
 
-    def __geocode__(self):
-        url = 'http://maps.googleapis.com/maps/api/geocode/json'
-        payload = {'sensor': 'false', 'address': self.address}
-        resp = requests.get(url, params=payload)
-        result = resp.json['results'][0]
-        self.address = result['formatted_address']
-        self.lat = result['geometry']['location']['lat']
-        self.lng = result['geometry']['location']['lng']
-
 
 class Owner(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -78,9 +68,12 @@ class Owner(db.Model):
 class City(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
+    lat = db.Column(db.Numeric)
+    lng = db.Column(db.Numeric)
 
     def __init__(self, name):
         self.name = name
+        address, self.lat, self.lng = _geocode(name)
 
     def __repr__(self):
         return '<City %s>' % self.name
@@ -112,3 +105,15 @@ def delete_item(item):
         print e
         db.session.rollback()
         return repr(e)
+
+
+def _geocode(address):
+    url = 'http://maps.googleapis.com/maps/api/geocode/json'
+    payload = {'sensor': 'false', 'address': address}
+    resp = requests.get(url, params=payload)
+    result = resp.json['results'][0]
+    address = result['formatted_address']
+    lat = result['geometry']['location']['lat']
+    lng = result['geometry']['location']['lng']
+
+    return address, lat, lng

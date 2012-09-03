@@ -1,17 +1,24 @@
 window.addEvent('domready', function() {
+  var cityBox = $('search-box').getElement('select');
+  var cityList = new CitySelect(cityBox);
+  
+  cityList.addEvent('update-map', function(pos) {
+    mapc.map.setCenter(pos);
+    mapc.map.setZoom(12);
+  });
+
   var mapc = new Map();
 
+  mapc.addEvent('update-bounds', function() {
+    area_list.load(mapc.city);
+  });
+  
   var area_list = new Items($('area-events').getElement('ul'), 'data');
   
   area_list.addEvent('done-loading', function() {
     mapc.render(area_list);
     area_list.render();
   });
-
-  mapc.addEvent('update-bounds', function() {
-    area_list.load(mapc.city);
-  });
-
 
   var feat_list = new Items($('hot-events').getElement('ul'), 'featured');
   feat_list.addEvent('done-loading', function() {
@@ -171,7 +178,13 @@ var Items = new Class({
 
   render: function() {
     if (this.items.length === 0) {
-      this.bound_element.getElements('li').set('text', 'Nothing :(');
+      this.bound_element.getElements('li').each(function(item, idx) {
+        if (idx === 0) {
+          item.set('text', 'Nothing');
+        } else {
+          item.dispose();
+        }
+      });
       return;
     }
 
@@ -220,10 +233,70 @@ var Items = new Class({
   }
 });
 
+var CitySelect = new Class({
+  Implements: Events,
+
+  cities: [],
+
+  initialize: function(element) {
+    this.element = element;
+    this.chosen = new Chosen(this.element);
+    this.load();
+    this.element.addEvent('change', (function() {
+      console.log("Event called");
+      console.log(this.chosen.result_single_selected.get('text'));
+
+      this.cities.each(function(item, idx) {
+        if (item.name == this.chosen.result_single_selected.get('text')) {
+          console.log("Found!");
+          var pos = new google.maps.LatLng(item.lat, item.lng);
+          this.fireEvent('update-map', pos);
+          return;
+        }
+      }, this);
+    }).bind(this));
+  },
+
+  load: function() {
+    this.cities = [];
+
+    if (!this.req) {
+      this.req = new Request.JSON({
+        url: 'city',
+        onSuccess: this.success.bind(this)
+      });
+    }
+
+    this.req.get();
+  },
+
+  success: function(data) {
+    this.element.getChildren().dispose();
+    data.items.each(function(item, idx) {
+      new Element('option', {
+        text: item.name
+      }).inject(this.element);
+
+      var hold = {
+        id: item.id,
+        name: item.name,
+        lat: item.lat,
+        lng: item.lng
+      };
+
+      this.cities.push(hold);
+    }, this);
+
+    this.element.fireEvent('liszt:updated');
+  }
+});
+
+
+
 // FIXME move to item class
 function render_details(marker) {
   marker.map.panTo(marker.position);
-  marker.map.setZoom(13);
+  marker.map.setZoom(14);
   
   $('event-details').empty();
 
