@@ -30,3 +30,25 @@ with app.test_request_context():
     db.session.add(ev1)
     db.session.add(ev2)
     db.session.commit()
+
+    city = City('New York')
+    db.session.add(city)
+    db.session.commit()
+
+    ev3 = Event(address='DBGB Kitchen and Bar, 299 Bowery St, NY',
+                owner=owner,
+                city=city,
+                title='New York Event',
+                start_date='31 Aug',
+                end_date='2 Sept')
+
+    ev4 = Event(address='Murray\'s Bagels, 500 6th Ave, NY',
+                owner=owner,
+                city=city,
+                title='New York Event 2',
+                start_date='4 Sept',
+                end_date='10 Sept')
+
+    db.session.add(ev3)
+    db.session.add(ev4)
+    db.session.commit()
