@@ -544,7 +544,7 @@ var Chosen = new Class({
 			var high = this.result_highlight,
 				high_id = high.id;
 			this.result_clear_highlight();
-			
+
 			if (this.is_multiple){
 				this.result_deactivate(high);
 			} else {

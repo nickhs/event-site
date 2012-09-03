@@ -1,7 +1,7 @@
 window.addEvent('domready', function() {
   var cityBox = $('search-box').getElement('select');
   var cityList = new CitySelect(cityBox);
-  
+
   cityList.addEvent('update-map', function(pos) {
     mapc.map.setCenter(pos);
     mapc.map.setZoom(12);
@@ -12,9 +12,9 @@ window.addEvent('domready', function() {
   mapc.addEvent('update-bounds', function() {
     area_list.load(mapc.city);
   });
-  
+
   var area_list = new Items($('area-events').getElement('ul'), 'data');
-  
+
   area_list.addEvent('done-loading', function() {
     mapc.render(area_list);
     area_list.render();
@@ -42,11 +42,14 @@ var Map = new Class({
     var mapOptions = {
       center: new google.maps.LatLng(37.774121, -122.423396),
       zoom: 12,
-      mapTypeId: google.maps.MapTypeId.ROADMAP
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      panControl: false,
+      mapTypeControl: false,
+      zoomControl: false
     };
 
     this.map = new google.maps.Map($('map_canvas'), mapOptions);
-    
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((function(position) {
         var loc = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
@@ -122,7 +125,7 @@ var Items = new Class({
   items: undefined,
   url: 'data',
   bound_element: undefined,
-  
+
   initialize: function(bound_element, endpoint) {
     if (endpoint) {
       this.url = endpoint;
@@ -131,11 +134,11 @@ var Items = new Class({
     this.bound_element = bound_element;
     this.items = [];
   },
-  
+
   add: function(item) {
     this.items.push(item);
   },
-  
+
   remove: function(to_remove) {
     if (to_remove) {
       items.each(function(item, idx) {
@@ -163,7 +166,7 @@ var Items = new Class({
     if (!this.req) {
       this.req = new Request.JSON({
         url: this.url,
-        onSuccess: this.success.bind(this) 
+        onSuccess: this.success.bind(this)
       });
     }
 
@@ -189,7 +192,7 @@ var Items = new Class({
     }
 
     this.bound_element.getElements('li').dispose();
-    
+
     this.items.each(function(item, idx) {
       var container = new Element('li');
       var sidebar = new Element('div', {
@@ -297,7 +300,7 @@ var CitySelect = new Class({
 function render_details(marker) {
   marker.map.panTo(marker.position);
   marker.map.setZoom(14);
-  
+
   $('event-details').empty();
 
   var header = new Element('h4', {

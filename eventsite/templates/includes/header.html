@@ -16,13 +16,12 @@
 
   <body>
     <div class="row-fluid" id="header">
-      <div class="span4"><h5>Mobile Events</h5></div>
-      <div class="span4 offset4">
-        <div id="search-box">
-          <select data-placeholder="Pick a City">
-            <option value="loading" disabled='disabled'>Loading...</option>
-          </select>
-        </div>
-        <div id="kiip-branding">By Kiip</div>
+      <div class="search">
+        <div class="lead-in span3 offset2 hidden-phone">I'm looking for mobile events in </div>
+          <div class="span4" id="search-box">
+            <select data-placeholder="San Francisco" class="city-search">
+              <option value="loading" disabled='disabled'>Loading...</option>
+            </select>
+          </div>
+       </div>
       </div>
-    </div>

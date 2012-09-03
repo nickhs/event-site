@@ -3,42 +3,68 @@ html {
 }
 
 body {
+  font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, "Helvetica Neue", Arial, Helvetica, sans-serif;
   height: 100%;
-}
-
-.full {
-  height: 100%;
-}
-
-#events {
-  float: right;
-  width: 30%;
-  background: white;
 }
 
 #map_canvas {
-  width: 70%;
+  width: 100%;
   float: left;
+  height: 375px;
+  position: relative;
+}
+
+@media (max-width: 767px) {
+#map_canvas {
+  display: none;
+}
+}
+
+input:focus {
+  outline: none;
 }
 
 #header {
-  background: #CF4228;
-  color: white;
-  opacity: 0.8;
+  opacity: 0.9;
+  height: 90px;
+  background: #1CC500;
+  position: relative;
+  z-index: 200;
 }
 
-li {
-  border-bottom: dashed 2px #cccccc;
+@media (max-width: 767px) {
+  #header {
+    height: 50px;
+    background: #fff;
+    position: relative;
+    z-index: 200;
+  }
+}
+
+.events li {
   list-style-type: none;
-}
-
-.sidebar {
-  width: 3px;
-  height: 100%;
-  float: left;
-  background-color: red;
+  padding:px;
 }
 
 .selected {
   background-color: #EEEEEE;
+  cursor: pointer;
+}
+
+.lead-in {
+  text-align: right;
+  margin-top: 5px;
+}
+
+.search {
+  margin-top: 20px;
+}
+
+.city-search {
+  width: 100%;
+}
+
+#event-details {
+  border-bottom: 2px #eee solid;
+  padding: 20px;
 }
