@@ -9,8 +9,6 @@ body {
 
 #footer{
   color: #fff;
-  opacity: 0.85;
-  background-color: #C21A00;
   font-size: 14px;
 }
 
@@ -19,37 +17,43 @@ body {
   font-weight: bold
 }
 .title-strip {
-  background-color: #66c0ff;
   text-align: center;
   font-size: 18px;
   color: #fff;
   font-weight: normal;
   display: block;
-  opacity: 0.95;
   padding: 10px;
 }
 
 #map_canvas {
   width: 100%;
   float: left;
-  height: 220px;
+  height: 350px;
   position: relative;
 }
 
 @media (max-width: 767px) {
-#map_canvas {
-  display: none;
-}
+  #map_canvas {
+    display: none;
+  }
 }
 
 input:focus {
   outline: none;
 }
 
+.red {
+  background-color: #C21A00;
+  opacity: 0.7;
+}
+
+.blue {
+  background-color: #66c0ff;
+  opacity: 0.7;
+}
+
 #header {
-  opacity: 0.95;
   height: 80px;
-  background: #46E312;
   position: relative;
   z-index: 200;
 }
@@ -91,6 +95,7 @@ a {
 
 .city-search {
   width: 100%;
+  opacity: 1;
 }
 
 #event-details {

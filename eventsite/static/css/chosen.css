@@ -112,6 +112,7 @@
   overflow-x: hidden;
   overflow-y: auto;
   background-color: #fff;
+  opacity: 1.0 !important;
 }
 .chzn-container-multi .chzn-results {
   margin: -1px 0 0;

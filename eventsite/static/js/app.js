@@ -213,11 +213,17 @@ var Items = new Class({
         html: item.address
       });
 
+      var dates = new Element('div', {
+        'class': 'dates',
+        html: item.start_date + " - " + item.end_date
+      });
+
       // Assemble li
       sidebar.inject(container);
       infocontainer.inject(container);
       title.inject(infocontainer);
       info.inject(infocontainer);
+      dates.inject(infocontainer)
 
       container.inject(this.bound_element);
 
