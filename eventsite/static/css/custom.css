@@ -68,15 +68,17 @@ input:focus {
 }
 
 .events li {
+  background: url('/static/img/calendar.png') left center no-repeat;
   list-style-type: none;
-  padding: 10px;
+  opacity: 0.9;
+  padding: 10px 10px 10px 40px;
 }
 
-.selected {
+.events li:hover {
   background-color: #eef8ff;
+  opacity: 1;
   cursor: pointer;
 }
-
 .lead-in {
   text-align: right;
   margin-top: 5px;
