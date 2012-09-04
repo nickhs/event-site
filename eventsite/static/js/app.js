@@ -17,7 +17,7 @@ window.addEvent('domready', function() {
 
   area_list.addEvent('done-loading', function() {
     mapc.render(area_list);
-    area_list.render();
+    area_list.render(mapc.city);
   });
 
   var feat_list = new Items($('hot-events').getElement('ul'), 'featured');
@@ -179,11 +179,13 @@ var Items = new Class({
     }
   },
 
-  render: function() {
+  render: function(city) {
     if (this.items.length === 0) {
       this.bound_element.getElements('li').each(function(item, idx) {
-        if (idx === 0) {
-          item.set('text', 'Sorry! We don\'t know about any events in your area. Do you? Email us!');
+        if (idx === 0 && city) {
+          item.set('text', 'Sorry! We don\'t know about any events in '+city+'. Do you? Email us!');
+        } else if (idx === 0) {
+          item.set('text', 'There are no featured items currently.');
         } else {
           item.dispose();
         }
@@ -302,7 +304,6 @@ function render_details(marker) {
   marker.map.setZoom(14);
 
   $('event-details').empty();
-
 
   var name = new Element('div', {
     'class': 'title',
