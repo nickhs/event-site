@@ -106,7 +106,7 @@
 /* @group Results */
 .chzn-container .chzn-results {
   margin: 0 4px 4px 0;
-  max-height: 290px;
+  max-height: 300px;
   padding: 0 0 0 4px;
   position: relative;
   overflow-x: hidden;
@@ -130,11 +130,13 @@
 }
 .chzn-container .chzn-results .highlighted {
   color: #000;
+  background: #eee;
 }
 .chzn-container .chzn-results li em {
   font-style: normal;
 }
 .chzn-container .chzn-results .highlighted em {
+  font-style: normal;
 }
 .chzn-container .chzn-results .no-results {
   display: list-item;
@@ -156,6 +158,8 @@
 .chzn-container-active .chzn-single {
 
 }
+
+
 .chzn-container-active .chzn-single-with-drop {
   background-color: #fff;
 }

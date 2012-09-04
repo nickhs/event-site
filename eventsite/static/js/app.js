@@ -183,7 +183,7 @@ var Items = new Class({
     if (this.items.length === 0) {
       this.bound_element.getElements('li').each(function(item, idx) {
         if (idx === 0) {
-          item.set('text', 'Nothing');
+          item.set('text', 'Sorry! We don\'t know about any events in your area. Do you? Email us!');
         } else {
           item.dispose();
         }
@@ -303,9 +303,6 @@ function render_details(marker) {
 
   $('event-details').empty();
 
-  var header = new Element('h4', {
-    html: "Event Details"
-  });
 
   var name = new Element('div', {
     'class': 'title',
@@ -317,7 +314,6 @@ function render_details(marker) {
     html: marker.item.desc
   });
 
-  header.inject($('event-details'));
   name.inject($('event-details'));
   details.inject($('event-details'));
 }

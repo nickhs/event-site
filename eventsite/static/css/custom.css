@@ -7,10 +7,32 @@ body {
   height: 100%;
 }
 
+#footer{
+  color: #fff;
+  opacity: 0.85;
+  background-color: #C21A00;
+  font-size: 14px;
+}
+
+#footer a {
+  color: #fff;
+  font-weight: bold
+}
+.title-strip {
+  background-color: #66c0ff;
+  text-align: center;
+  font-size: 18px;
+  color: #fff;
+  font-weight: normal;
+  display: block;
+  opacity: 0.95;
+  padding: 10px;
+}
+
 #map_canvas {
   width: 100%;
   float: left;
-  height: 375px;
+  height: 220px;
   position: relative;
 }
 
@@ -25,9 +47,9 @@ input:focus {
 }
 
 #header {
-  opacity: 0.9;
-  height: 90px;
-  background: #1CC500;
+  opacity: 0.95;
+  height: 80px;
+  background: #46E312;
   position: relative;
   z-index: 200;
 }
@@ -43,17 +65,24 @@ input:focus {
 
 .events li {
   list-style-type: none;
-  padding:px;
+  padding: 10px;
 }
 
 .selected {
-  background-color: #EEEEEE;
+  background-color: #eef8ff;
   cursor: pointer;
 }
 
 .lead-in {
   text-align: right;
   margin-top: 5px;
+  font-size: 18px;
+  color: #fff;
+  margin-right: -10px;
+}
+
+a {
+    color: #0096FF;
 }
 
 .search {
@@ -65,6 +94,5 @@ input:focus {
 }
 
 #event-details {
-  border-bottom: 2px #eee solid;
   padding: 20px;
 }
