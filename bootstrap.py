@@ -4,16 +4,16 @@ import datetime
 import random
 import faker
 
-addresses = [{'address': '565 Angel Bernal, 15324 Rancho Serena Dr', 'city': 'Paramount', 'state': 'CA', 'zip': '90723-4579'},
-             {'address': '4106 Tucson Dr', 'city': 'Greensboro', 'state': 'NC', 'zip': '27406-6333'},
-             {'address': '500 E Sixth St, Apt 2', 'city': 'Prairie City', 'state': 'IA', 'zip': '50228-8608'},
-             {'address': '2600 Pine Lake Dr', 'city': 'Greensboro', 'state': 'NC', 'zip': '27407-6646'},
-             {'address': '5302 Texoma Pkwy', 'city': 'Sherman', 'state': 'TX', 'zip': '75090-2112'},
-             {'address': '1318 N Vasco Rd', 'city': 'Livermore', 'state': 'CA', 'zip': '94551-9212'},
-             {'address': '1700 W New Haven Ave', 'city': 'Melbourne', 'state': 'FL', 'zip': '32904-3919'},
-             {'address': '16900 N Bay Rd', 'city': 'Sunny Isles Beach', 'state': 'FL', 'zip': '33160-4252'},
-             {'address': '410 Gardenia Ln', 'city': 'Buffalo Grove', 'state': 'IL', 'zip': '60089-1661'},
-             {'address': '1511 E 86th St', 'city': 'Chicago', 'state': 'IL', 'zip': '60619-6518'}]
+addresses = [{'address': '989 Market Street', 'city': 'San Francisco', 'state': 'CA'},
+             {'address': '1230 York Avenue', 'city': 'New York', 'state': 'NY'},
+             {'address': '32 East 31st Street', 'city': 'New York', 'state': 'NY'},
+             {'address': '291 Broadway', 'city': 'New York', 'state': 'NY'},
+             {'address': '587 10th Avenue', 'city': 'New York', 'state': 'NY'},
+             {'address': '2900 22nd Street', 'city': 'San Francisco', 'state': 'CA'},
+             {'address': '77 De Boom Street', 'city': 'San Francisco', 'state': 'CA'},
+             {'address': '149 9th Street', 'city': 'San Francisco', 'state': 'CA'},
+             {'address': '733 Front Street', 'city': 'San Francisco', 'state': 'CA'},
+             {'address': '842 Folsom Street', 'city': 'San Francisco', 'state': 'CA'}]
 
 
 def get_start_time():
@@ -22,7 +22,7 @@ def get_start_time():
 
 def create_full_address(i):
     addr = addresses[i]
-    return '%s, %s, %s, %s' % (addr['address'], addr['city'], addr['state'], addr['zip'])
+    return '%s, %s, %s' % (addr['address'], addr['city'], addr['state'])
 
 
 def create_owner():
@@ -33,10 +33,15 @@ def create_owner():
 
 
 def create_city(i):
-    city = City(addresses[i]['city'])
+    name = addresses[i]['city']
+    city = City.query.filter_by(name=name).first()
+
+    if city is None:
+        city = City(name)
+        db.session.add(city)
+        db.session.commit()
+
     print city
-    db.session.add(city)
-    db.session.commit()
     return city
 
 
