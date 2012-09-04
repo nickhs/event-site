@@ -27,7 +27,11 @@ class Event(db.Model):
     city = db.relationship('City', backref=db.backref('events'), lazy='joined')
 
     def __init__(self, address, title, owner, start_date, end_date, city, desc=None, link=None, featured=False, paid=False):
-        self.address, self.lat, self.lng = _geocode(address)
+        result = _geocode(address)
+
+        if result is not False:
+            self.address, self.lat, self.lng = result
+
         self.title = title
         self.owner = owner
         self.desc = desc
@@ -111,7 +115,14 @@ def _geocode(address):
     url = 'http://maps.googleapis.com/maps/api/geocode/json'
     payload = {'sensor': 'false', 'address': address}
     resp = requests.get(url, params=payload)
-    result = resp.json['results'][0]
+
+    try:
+        result = resp.json['results'][0]
+    except Exception as e:
+        print e
+        print resp
+        return False
+
     address = result['formatted_address']
     lat = result['geometry']['location']['lat']
     lng = result['geometry']['location']['lng']
