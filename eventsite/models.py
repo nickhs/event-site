@@ -17,7 +17,7 @@ class Event(db.Model):
     start_date = db.Column(db.DateTime)
     end_date = db.Column(db.DateTime)
     featured = db.Column(db.Boolean)
-    paid = db.Column(db.Boolean)
+    paid = db.Column(db.String)
     popularity = db.Column(db.Integer)
 
     owner_id = db.Column(db.Integer, db.ForeignKey('owner.id'))
@@ -26,7 +26,7 @@ class Event(db.Model):
     city_id = db.Column(db.Integer, db.ForeignKey('city.id'), index=True)
     city = db.relationship('City', backref=db.backref('events'), lazy='joined')
 
-    def __init__(self, address, title, owner, start_date, end_date, city, desc=None, link=None, featured=False, paid=False):
+    def __init__(self, address, title, owner, start_date, end_date, city, desc=None, link=None, featured=False, paid='Free'):
         result = _geocode(address)
 
         if result is not False:

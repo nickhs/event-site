@@ -58,7 +58,8 @@ def create_fake_event(i):
                   end_date=str(faker.date.datetime(get_start_time())
                                + datetime.timedelta(days=5)),
                   link='http://%s' % faker.internet.domain_name(),
-                  featured=random.choice([True, False]))
+                  featured=random.choice([True, False]),
+                  paid=random.choice(['10', '20', '200', 'Free']))
 
     db.session.add(event)
     db.session.commit()
