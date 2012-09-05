@@ -151,3 +151,50 @@ a {
 #event-details-container {
   display: none;
 }
+
+/* Event Details Customization */
+.details-container {
+}
+
+.details-title {
+  font-size: 26px;
+  color: #000;
+  opacity: .65;
+  padding-bottom: 5px;
+  font-weight: bold;
+}
+
+.details-desc {
+  padding-top: 20px;
+
+}
+
+.details-details li:hover {
+    cursor: default;
+    background-color: inherit;
+}
+
+.details-details {
+
+}
+
+li.details-date {
+  background: url('/static/img/calendar.png') left center no-repeat;
+
+}
+
+li.details-payment {
+  background: url('/static/img/money.png') left center no-repeat;
+}
+
+li.details-address {
+  background: url('/static/img/map.png') left center no-repeat;
+}
+
+a .details-link {
+
+}
+
+li.details-link {
+  background: url('/static/img/keyboard.png') left center no-repeat;
+}
