@@ -243,6 +243,19 @@ Item.extend({
         '<div class="{date_class}">{start_date} - {end_date}</div>',
     '</div>'
   ],
+  details: [
+  '<div class="{container_class}">',
+      '<div class="{title_class}">{title}</div>',
+      '<div class="{desc_class}">{desc}</div>',
+      '<ul class="{details_class}">',
+          '<li class="{date_class}">Start Date: {start_date}</li>',
+          '<li class="{date_class}">End Date: {end_date}</li>',
+          '<li class="{payment_class}">Paid: {payment}</li>',
+          '<li class="{address_class}"><a href="http://maps.google.com/?q={address}">{address}</a></li>',
+          '<li class="{link_class}"><a href="{link}">Event Website</a></li>',
+      '</ul>',
+  '</div>'
+  ],
 
   getElementFromTemplate: function(template, model){
     template = (template.join) ? template.join('') : template;
@@ -326,16 +339,24 @@ function render_details(marker) {
 
   $('event-details').empty();
 
-  var name = new Element('div', {
-    'class': 'title',
-    html: marker.item.title
+  var detailscontainer = Item.getElementFromTemplate(Item.details, {
+    'container_class': 'details-container',
+    'title_class': 'details-title',
+    'title': marker.item.title,
+    'desc_class': 'details-desc',
+    'desc': marker.item.desc,
+    'details_class': 'details-details',
+    'date_class': 'details-date',
+    'start_date': moment(marker.item.start_date).format('dddd, MMMM Do YYYY'),
+    'end_date': moment(marker.item.end_date).format('dddd, MMMM Do YYYY'),
+    'payment_class': 'details-payment',
+    'payment': marker.item.paid,
+    'address_class': 'details-address',
+    'address': marker.item.address,
+    'link_class': 'details-link',
+    'link': marker.item.link
   });
 
-  var details = new Element('div', {
-    'class': 'details',
-    html: marker.item.desc
-  });
 
-  name.inject($('event-details'));
-  details.inject($('event-details'));
+  detailscontainer.inject($('event-details'));
 }
