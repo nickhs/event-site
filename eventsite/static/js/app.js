@@ -1,4 +1,5 @@
 window.addEvent('domready', function() {
+
   var cityBox = $('search-box').getElement('select');
   var cityList = new CitySelect(cityBox);
 
@@ -197,33 +198,21 @@ var Items = new Class({
 
     this.items.each(function(item, idx) {
       var container = new Element('li');
-      var sidebar = new Element('div', {
-        'class': 'sidebar'
-      });
-      var infocontainer = new Element('div', {
-        'class': 'info-container',
-        'data-id': item.id
-      });
-      var title = new Element('div', {
-        'class': 'title',
-        html: item.title
-      });
-      var info = new Element('div', {
-        'class': 'info',
-        html: item.address
-      });
 
-      var dates = new Element('div', {
-        'class': 'dates',
-        html: item.start_date + " - " + item.end_date
+      var infocontainer = Item.getElementFromTemplate(Item.template, {
+        'container_class': 'info-container',
+        'id': item.id,
+        'title_class': 'event-title',
+        'title': item.title,
+        'info_class': 'event-info',
+        'address': item.address,
+        'date_class': 'event-dates',
+        'start_date': moment(item.start_date).format('dddd, MMMM Do YYYY'),
+        'end_date': moment(item.end_date).format('dddd, MMMM Do YYYY')
       });
 
       // Assemble li
-      sidebar.inject(container);
       infocontainer.inject(container);
-      title.inject(infocontainer);
-      info.inject(infocontainer);
-      dates.inject(infocontainer)
 
       container.inject(this.bound_element);
 
@@ -243,6 +232,29 @@ var Items = new Class({
     }, this);
   }
 });
+
+/* The Item Template */
+
+Item.extend({
+  template: [
+    '<div class="{container_class}" data-id="{id}">',
+        '<div class="{title_class}">{title}</div>',
+        '<div class="{info_class}">{address}</div>',
+        '<div class="{date_class}">{start_date} - {end_date}</div>',
+    '</div>'
+  ],
+
+  getElementFromTemplate: function(template, model){
+    template = (template.join) ? template.join('') : template;
+    model = model || {};
+
+    var el = new Element('div', {
+      html: template.substitute(model)
+    });
+
+    return el.getFirst().dispose();
+  }
+})
 
 var CitySelect = new Class({
   Implements: Events,
@@ -304,8 +316,11 @@ var CitySelect = new Class({
 
 
 
+
 // FIXME move to item class
 function render_details(marker) {
+  $('event-details-container').style.display = 'inline-block';
+
   marker.map.panTo(marker.position);
   marker.map.setZoom(14);
 

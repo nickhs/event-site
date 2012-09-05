@@ -18,7 +18,7 @@ body {
 }
 .title-strip {
   text-align: center;
-  font-size: 18px;
+  font-size: 26px;
   color: #fff;
   font-weight: normal;
   display: block;
@@ -76,7 +76,6 @@ input:focus {
 
 .events li:hover {
   background-color: #eef8ff;
-  opacity: 1;
   cursor: pointer;
 }
 .lead-in {
@@ -102,4 +101,28 @@ a {
 
 #event-details {
   padding: 20px;
+}
+
+
+/* Event List Customization */
+
+.info-container {
+  line-height: 24px;
+}
+
+.event-title {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.event-info {
+
+}
+
+.event-dates {
+  opacity: .7;
+}
+
+#event-details-container {
+  display: none;
 }
