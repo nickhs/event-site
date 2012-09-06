@@ -1,9 +1,7 @@
 from flask import render_template, jsonify, request, Blueprint
 from models import City, Event, Owner, add_item, delete_item
-from auth import requires_auth
 
 data_api = Blueprint('data_api', 'eventsite')
-admin = Blueprint('admin', 'eventsite')
 
 @data_api.route('/')
 def index():
@@ -128,9 +126,3 @@ def convert_to_dict(obj):
         ret[key] = str(val)
 
     return ret
-
-@admin.route('/admin')
-@requires_auth
-def admin_page():
-    events = Event.query.all()
-    return render_template('admin.html', events=events)

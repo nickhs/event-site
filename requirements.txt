@@ -7,3 +7,4 @@ requests
 simplejson
 python-dateutil
 python-faker
+Flask-Admin
