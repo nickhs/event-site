@@ -688,8 +688,7 @@ var Chosen = new Class({
 
 	winnow_results_set_highlight: function(){
 		if (!this.result_highlight){
-			var selected_results = !this.is_multiple ? this.search_results.getElements(".result-selected") : [];
-			var do_high = selected_results.length ? selected_results[0] : this.search_results.getElement(".active-result");
+			var do_high = this.search_results.getElement(".active-result");
         	if (do_high != null) {
 				this.result_do_highlight(do_high);
 			}
