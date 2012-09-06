@@ -12,7 +12,6 @@ window.addEvent('domready', function() {
 
   mapc.addEvent('update-bounds', function() {
     area_list.load(mapc.city);
-    $('event-details-container').set('style', 'display: none;');
     cityList.change(mapc.city);
   });
 
@@ -283,6 +282,7 @@ var CitySelect = new Class({
       this.cities.each(function(item, idx) {
         if (item.name == this.chosen.result_single_selected.get('text')) {
           var pos = new google.maps.LatLng(item.lat, item.lng);
+          $('event-details-container').set('style', 'display: none;');
           this.fireEvent('update-map', pos);
           return;
         }
