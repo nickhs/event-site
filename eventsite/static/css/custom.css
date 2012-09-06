@@ -10,6 +10,8 @@ body {
 #footer{
   color: #fff;
   font-size: 14px;
+  position: absolute;
+  bottom: 0;
 }
 
 #footer a {
