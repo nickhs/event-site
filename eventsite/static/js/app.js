@@ -12,6 +12,8 @@ window.addEvent('domready', function() {
 
   mapc.addEvent('update-bounds', function() {
     area_list.load(mapc.city);
+    $('event-details-container').set('style', 'display: none;');
+    cityList.change(mapc.city);
   });
 
   var area_list = new Items($('area-events').getElement('ul'), 'data');
@@ -278,12 +280,8 @@ var CitySelect = new Class({
     this.chosen = new Chosen(this.element);
     this.load();
     this.element.addEvent('change', (function() {
-      console.log("Event called");
-      console.log(this.chosen.result_single_selected.get('text'));
-
       this.cities.each(function(item, idx) {
         if (item.name == this.chosen.result_single_selected.get('text')) {
-          console.log("Found!");
           var pos = new google.maps.LatLng(item.lat, item.lng);
           this.fireEvent('update-map', pos);
           return;
@@ -308,25 +306,42 @@ var CitySelect = new Class({
   success: function(data) {
     this.element.getChildren().dispose();
     data.items.each(function(item, idx) {
-      new Element('option', {
+      var opt = new Element('option', {
         text: item.name
-      }).inject(this.element);
+      });
+
+      opt.inject(this.element);
 
       var hold = {
         id: item.id,
         name: item.name,
         lat: item.lat,
-        lng: item.lng
+        lng: item.lng,
+        option: opt
       };
 
       this.cities.push(hold);
     }, this);
 
     this.element.fireEvent('liszt:updated');
+  },
+
+  change: function(city) {
+    if (this.element === undefined) {
+      return;
+    }
+    
+    this.cities.each(function(item, idx) {
+      if (item.name == city) {
+        item.option.set('selected', 'true');
+        this.element.fireEvent('liszt:updated');
+        return;
+      }
+    }, this);
+
+    console.log("Ass hat");
   }
 });
-
-
 
 
 // FIXME move to item class
