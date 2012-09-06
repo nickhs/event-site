@@ -157,6 +157,7 @@ a {
 }
 
 .details-title {
+  line-height: 35px;
   font-size: 26px;
   color: #000;
   opacity: .65;
@@ -167,6 +168,10 @@ a {
 .details-desc {
   padding-top: 20px;
 
+}
+
+ul.details-details {
+    padding: 0px;
 }
 
 .details-details li:hover {
