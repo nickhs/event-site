@@ -266,7 +266,7 @@ Item.extend({
 
     return el.getFirst().dispose();
   }
-})
+});
 
 var CitySelect = new Class({
   Implements: Events,
@@ -356,6 +356,7 @@ function render_details(marker) {
     'link': marker.item.link
   });
 
-
   detailscontainer.inject($('event-details'));
+
+  window.scrollTo(0, 0);
 }
