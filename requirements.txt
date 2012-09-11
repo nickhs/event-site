@@ -8,3 +8,4 @@ simplejson
 python-dateutil
 python-faker
 Flask-Admin
+Flask-Login

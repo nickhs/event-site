@@ -1,4 +1,5 @@
 from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.login import UserMixin
 from dateutil import parser
 import requests
 from sqlalchemy.exc import IntegrityError
@@ -55,12 +56,14 @@ class Event(db.Model):
         return self.title
 
 
-class Owner(db.Model):
+class Owner(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
+    password = db.Column(db.String)
 
-    def __init__(self, name):
+    def __init__(self, name, password):
         self.name = name
+        self.password = password
 
     def __repr__(self):
         return '<Owner %s>' % self.name

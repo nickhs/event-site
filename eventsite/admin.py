@@ -1,4 +1,5 @@
 from flask.ext.admin import Admin
+from flask.ext.login import current_user
 from flask.ext.admin.contrib.sqlamodel import ModelView
 from models import Event, db
 
@@ -6,6 +7,9 @@ admin = Admin(name='Event Site')
 
 
 class CustomView(ModelView):
+    def is_accessible(self):
+      return current_user.is_authenticated()
+
     list_columns = ('title', 'desc', 'address', 'start_date', 'end_date',
                     'city', 'featured', 'paid', 'owner', 'link')
 
