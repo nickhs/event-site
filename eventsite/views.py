@@ -44,6 +44,9 @@ def handle_get(request):
 def handle_post(request):
     data = request.json
 
+    if not data:
+        return {'status': 'JSON only buddy'}
+
     if not data.get('auth', None) == config.AUTH_KEY:
         return {'status': 'unauthorized'}
 
