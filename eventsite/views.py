@@ -1,5 +1,6 @@
 from flask import render_template, jsonify, request, Blueprint
 from models import City, Event, Owner, add_item, delete_item
+import config
 
 data_api = Blueprint('data_api', 'eventsite')
 
@@ -41,6 +42,9 @@ def handle_get(request):
 
 def handle_post(request):
     data = request.json
+
+    if not data.get('auth', None) == config.AUTH_KEY:
+        return jsonify({'status': 'unauthorized'})
 
     try:
         owner = Owner.query.filter_by(name=data['owner']).first()
