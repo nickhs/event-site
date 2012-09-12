@@ -4,6 +4,7 @@ import config
 
 data_api = Blueprint('data_api', 'eventsite')
 
+
 @data_api.route('/')
 def index():
     return render_template('index.html')
@@ -44,7 +45,7 @@ def handle_post(request):
     data = request.json
 
     if not data.get('auth', None) == config.AUTH_KEY:
-        return jsonify({'status': 'unauthorized'})
+        return {'status': 'unauthorized'}
 
     try:
         owner = Owner.query.filter_by(name=data['owner']).first()
