@@ -1,12 +1,11 @@
 from flask.ext.admin import Admin
 from flask.ext.login import current_user
 from flask.ext.admin.contrib.sqlamodel import ModelView
-from models import Event, db
+from models import Event, db, Owner
 
 admin = Admin(name='Event Site')
 
-
-class CustomView(ModelView):
+class CustomEventView(ModelView):
     def is_accessible(self):
       return current_user.is_authenticated()
 
@@ -32,7 +31,19 @@ class CustomView(ModelView):
         self.session.commit()
 
     def __init__(self, session):
-        super(CustomView, self).__init__(Event, session)
+        super(CustomEventView, self).__init__(Event, session)
 
-view = CustomView(db.session)
-admin.add_view(view)
+
+class CustomOwnerView(ModelView):
+    def is_accessible(self):
+      return current_user.is_authenticated()
+
+    def __init__(self, session):
+        super(CustomOwnerView, self).__init__(Owner, session)
+
+
+event_view = CustomEventView(db.session)
+owner_view = CustomOwnerView(db.session)
+
+admin.add_view(owner_view)
+admin.add_view(event_view)
