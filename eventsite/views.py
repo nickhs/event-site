@@ -86,6 +86,9 @@ def handle_delete(request):
     data = request.json
     event = None
 
+    if not data.get('auth', None) == config.AUTH_KEY:
+        return {'status': 'unauthorized'}
+
     if 'id' in data:
         event = Event.query.get(data['id'])
 
