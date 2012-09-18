@@ -31,8 +31,12 @@ with f as cfile:
             'paid': paid,
             'desc': desc,
             'auth': nonce,
-            'owner': 'Nick'}
+            'owner': 'nick'}
 
         headers = {'Content-type': 'application/json'}
-        r = requests.post(url, data=json.dumps(payload), headers=headers)
-        print r.text
+        try:
+            r = requests.post(url, data=json.dumps(payload), headers=headers)
+            print r.text
+        except Exception as e:
+            print e
+            print payload
