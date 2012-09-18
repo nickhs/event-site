@@ -26,7 +26,9 @@ def create_full_address(i):
 
 
 def create_owner():
-    owner = Owner(faker.name.first_name().lower(), 'testpass')
+    owner = Owner()
+    owner.name = faker.name.first_name().lower()
+    owner.password = 'testpass'
     db.session.add(owner)
     db.session.commit()
     print owner.name

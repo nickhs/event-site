@@ -61,16 +61,6 @@ class Owner(db.Model, UserMixin):
     name = db.Column(db.String(50))
     password = db.Column(db.String)
 
-    def __init__(self, name, password):
-        self.name = name
-        self.password = password
-
-    def __repr__(self):
-        return '<Owner %s>' % self.name
-
-    def __str__(self):
-        return self.name
-
 
 class City(db.Model):
     id = db.Column(db.Integer, primary_key=True)

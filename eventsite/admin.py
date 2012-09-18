@@ -1,7 +1,7 @@
 from flask.ext.admin import Admin
 from flask.ext.login import current_user
 from flask.ext.admin.contrib.sqlamodel import ModelView
-from models import Event, db, Owner
+from models import Event, db, Owner, City
 
 admin = Admin(name='Event Site')
 
@@ -41,9 +41,18 @@ class CustomOwnerView(ModelView):
     def __init__(self, session):
         super(CustomOwnerView, self).__init__(Owner, session)
 
+class CustomCityView(ModelView):
+    def is_accessible(self):
+      return current_user.is_authenticated()
+
+    def __init__(self, session):
+        super(CustomCityView, self).__init__(City, session)
+
 
 event_view = CustomEventView(db.session)
 owner_view = CustomOwnerView(db.session)
+city_view = CustomCityView(db.session)
 
-admin.add_view(owner_view)
 admin.add_view(event_view)
+admin.add_view(owner_view)
+admin.add_view(city_view)
