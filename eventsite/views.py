@@ -35,7 +35,7 @@ def handle_get(request):
         if city is None:
             items = []
         else:
-            items = Event.query.filter(Event.city == city, Event.start_date > now).limit(10).all()
+            items = Event.query.filter(Event.city == city, Event.start_date > now).order_by(Event.start_date).limit(10).all()
             items = [convert_to_dict(x) for x in items]
     else:
         items = [convert_to_dict(x) for x in Event.query.limit(5).all()]
