@@ -10,15 +10,15 @@ window.addEvent('domready', function() {
 
   var mapc = new Map();
 
-  mapc.addEvent('update-bounds', function() {
-    area_list.load(mapc.city);
-    cityList.change(mapc.city);
-  });
 
   var area_list = new Items($('area-events').getElement('ul'), 'data');
+  console.log('city', mapc.city);
+  area_list.load(mapc.city);
 
   area_list.addEvent('done-loading', function() {
     mapc.render(area_list);
+    console.log("Here", mapc);
+    console.log("here2", mapc.city);
     area_list.render(mapc.city);
   });
 
@@ -35,12 +35,7 @@ var Map = new Class({
   Implements: Events,
 
   initialize: function() {
-    this.init_map();
-    this.bounds = null;
-    this.city = null;
-  },
-
-  init_map: function() {
+    this.city = 'San Francisco';
     var mapOptions = {
       center: new google.maps.LatLng(37.774121, -122.423396),
       zoom: 12,
@@ -51,26 +46,7 @@ var Map = new Class({
     };
 
     this.map = new google.maps.Map($('map_canvas'), mapOptions);
-
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((function(position) {
-        var loc = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-        if (loc != undefined) {
-          this.map.setCenter(loc);
-        }
-      }).bind(this));
-    }
-
-    google.maps.event.addListener(this.map, 'bounds_changed', (function() {
-      if (this.bounds === null) {
-        this.updateBounds();
-      }
-      else if (!this.map.getBounds().intersects(this.bounds) && this.map.getZoom() > 11) {
-        this.updateBounds();
-      }
-    }).bind(this));
-
-    return this.map;
+    this.fireEvent('load');
   },
 
   render: function(item_list) {
@@ -88,28 +64,6 @@ var Map = new Class({
 
   onMarkerClick: function(marker) {
     render_details(this);
-  },
-
-  findCity: function(loc) {
-    geocoder = new google.maps.Geocoder();
-    geocoder.geocode({'latLng': loc}, (function(results, status) {
-      if (status == google.maps.GeocoderStatus.OK) {
-        results.each(function(item, idx) {
-          if (item.types[0] == 'administrative_area_level_2') {
-            this.city = item.address_components[0].long_name;
-            console.log(this.city);
-            this.fireEvent('update-bounds');
-            return;
-          }
-        }, this);
-      }
-    }).bind(this));
-  },
-
-  updateBounds: function() {
-    console.log('updateBounds ran');
-    this.bounds = this.map.getBounds();
-    this.findCity(this.map.getCenter());
   }
 });
 
@@ -162,6 +116,7 @@ var Items = new Class({
   },
 
   load: function(city) {
+    console.log(this.bound_element);
     console.log("load: " + city);
     this.items = [];
 
@@ -330,7 +285,7 @@ var CitySelect = new Class({
     if (this.element === undefined) {
       return;
     }
-    
+
     this.cities.each(function(item, idx) {
       if (item.name == city) {
         item.option.set('selected', 'true');
