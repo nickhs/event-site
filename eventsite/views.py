@@ -1,6 +1,7 @@
 from flask import render_template, jsonify, request, Blueprint
 from models import City, Event, Owner, add_item, delete_item
 import config
+import datetime
 
 data_api = Blueprint('data_api', 'eventsite')
 
@@ -29,11 +30,12 @@ def handle_get(request):
     if 'city' in request.args:
         to_find = request.args['city']
         city = City.query.filter_by(name=to_find).first()
+        now = datetime.datetime.now()
 
         if city is None:
             items = []
         else:
-            items = Event.query.filter_by(city_id=city.id).order_by(Event.start_date).limit(5).all()
+            items = Event.query.filter(Event.city == city, Event.start_date > now).limit(10).all()
             items = [convert_to_dict(x) for x in items]
     else:
         items = [convert_to_dict(x) for x in Event.query.limit(5).all()]
