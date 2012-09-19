@@ -17,7 +17,8 @@ addresses = [{'address': '989 Market Street', 'city': 'San Francisco', 'state': 
 
 
 def get_start_time():
-    return datetime.datetime.today() - datetime.timedelta(days=10)
+    r = random.randint(2, 12)
+    return datetime.datetime.today() + datetime.timedelta(days=r)
 
 
 def create_full_address(i):
@@ -52,14 +53,15 @@ def create_fake_event(i):
     """
     Creates a fake event for use in testing.
     """
+
+    start = get_start_time()
     event = Event(address=create_full_address(i),
                   title=' '.join(faker.lorem.words()).title(),
                   owner=create_owner(),
                   desc=faker.lorem.paragraph(),
                   city=create_city(i),
-                  start_date=str(faker.date.datetime(get_start_time())),
-                  end_date=str(faker.date.datetime(get_start_time())
-                               + datetime.timedelta(days=5)),
+                  start_date=str(start),
+                  end_date=str(start),
                   link='http://%s' % faker.internet.domain_name(),
                   featured=random.choice([True, False]),
                   paid=random.choice(['$10.00', '$20.00', '$200.00', 'Free']))
