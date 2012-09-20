@@ -33,7 +33,7 @@ var Map = new Class({
   Implements: Events,
 
   initialize: function() {
-    this.city = 'San Francisco';
+    this.city = 'SF Bay Area';
     var mapOptions = {
       center: new google.maps.LatLng(37.774121, -122.423396),
       zoom: 12,
