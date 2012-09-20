@@ -3,22 +3,20 @@ window.addEvent('domready', function() {
   var cityBox = $('search-box').getElement('select');
   var cityList = new CitySelect(cityBox);
 
-  cityList.addEvent('update-map', function(pos) {
+  cityList.addEvent('update-map', function(pos, city) {
     mapc.map.setCenter(pos);
     mapc.map.setZoom(12);
+    mapc.city = city;
+    area_list.load(city);
   });
 
   var mapc = new Map();
 
-
   var area_list = new Items($('area-events').getElement('ul'), 'data');
-  console.log('city', mapc.city);
   area_list.load(mapc.city);
 
   area_list.addEvent('done-loading', function() {
     mapc.render(area_list);
-    console.log("Here", mapc);
-    console.log("here2", mapc.city);
     area_list.render(mapc.city);
   });
 
@@ -116,8 +114,6 @@ var Items = new Class({
   },
 
   load: function(city) {
-    console.log(this.bound_element);
-    console.log("load: " + city);
     this.items = [];
 
     if (!this.req) {
@@ -238,7 +234,8 @@ var CitySelect = new Class({
         if (item.name == this.chosen.result_single_selected.get('text')) {
           var pos = new google.maps.LatLng(item.lat, item.lng);
           $('event-details-container').set('style', 'display: none;');
-          this.fireEvent('update-map', pos);
+          var city = this.chosen.result_single_selected.get('text');
+          this.fireEvent('update-map', [pos, city]);
           return;
         }
       }, this);
@@ -293,8 +290,6 @@ var CitySelect = new Class({
         return;
       }
     }, this);
-
-    console.log("Ass hat");
   }
 });
 
